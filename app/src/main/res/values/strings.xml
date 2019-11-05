@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Test map</string>
+    <string name="tv_device_memory_text">Device memory</string>
+</resources>
