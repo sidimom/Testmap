@@ -12,24 +12,27 @@ import java.util.List;
 import my.test.testmap.Activities.MainActivity;
 import my.test.testmap.R;
 import my.test.testmap.Region;
+import my.test.testmap.RestCallback;
 
-public class PresenterMainActivity {
+public class PresenterMainActivity implements RestCallback {
     private MainActivity view;
     private StatFs statFs;
-    private ModelReadingXML model;
+    private ModelReadingXML modelXML;
+    private ModelAPI modelAPI;
 
     public void attachView(MainActivity activity){
 
         view = activity;
         statFs = new StatFs(Environment.getExternalStorageDirectory().getPath());
         XmlPullParser parser = view.getResources().getXml(R.xml.regions);
-        model = new ModelReadingXML(parser);
+        modelXML = new ModelReadingXML(parser);
+        modelAPI = new ModelAPI();
 
     }
 
     public void detachView(){
         view = null;
-        model = null;
+        modelXML = null;
     }
 
     public void refreshMemoryInfo() {
@@ -40,7 +43,7 @@ public class PresenterMainActivity {
 
     public void setRegions() {
         try {
-            List<Region> regions = model.getRegions();
+            List<Region> regions = modelXML.getRegions();
             if (regions != null) {
                 view.setAdapter(regions);
             }
@@ -54,7 +57,17 @@ public class PresenterMainActivity {
     }
 
     public void downloadedRegion(Region region) {
-        view.showToast("download region");
+        modelAPI.downloadRegion(this, region);
     }
 
+    @Override
+    public void downloadResponse() {
+        view.showToast("downloaded");
+        refreshMemoryInfo();
+    }
+
+    @Override
+    public void error(String textError) {
+        view.showToast(textError);
+    }
 }

@@ -56,26 +56,38 @@ public class RegionAdapter extends RecyclerView.Adapter<RegionAdapter.RegionHold
         @BindView(R.id.iv_download)
         ImageView iv_download;
 
-        public RegionHolder(@NonNull View itemView) {
+        RegionHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
-        public void bind(Region region) {
+        void bind(Region region) {
             tv_region_item.setText(region.name);
-            if (!region.isDownloaded){
+            if (region.isDownloaded){
 
                 iv_download.setVisibility(View.INVISIBLE);
             }
         }
 
-        @OnClick
-        void onClick(){
-            onRegionClickListener.onRegionClick(regions.get(getLayoutPosition()));
+        @OnClick({R.id.tv_region_item, R.id.iv_download})
+        void onClick(View view){
+            Region region = regions.get(getLayoutPosition());
+            switch (view.getId()){
+                case R.id.tv_region_item:
+                    onRegionClickListener.onRegionClick(region);
+                    break;
+                case R.id.iv_download:
+                    onRegionClickListener.onDownloadClick(region);
+                    break;
+                default:
+                    break;
+            }
+
         }
     }
 
     public interface OnRegionClickListener{
         void onRegionClick(Region region);
+        void onDownloadClick(Region region);
     }
 }

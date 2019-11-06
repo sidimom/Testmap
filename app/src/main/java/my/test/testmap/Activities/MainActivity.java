@@ -55,12 +55,15 @@ public class MainActivity extends AppCompatActivity {
         RegionAdapter.OnRegionClickListener onRegionClickListener = new RegionAdapter.OnRegionClickListener() {
             @Override
             public void onRegionClick(Region region) {
-                if (region.inner_download_prefix != null
-                        && !region.inner_download_prefix.isEmpty()){
+                if (region.subregions != null
+                        && region.subregions.size() > 0){
                     openSubRegions(region);
-                }else {
-                    presenter.downloadedRegion(region);
                 }
+            }
+
+            @Override
+            public void onDownloadClick(Region region) {
+                presenter.downloadedRegion(region);
             }
         };
         adapter = new RegionAdapter(onRegionClickListener);
@@ -81,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         Bundle bundle = new Bundle();
-        bundle.putSerializable("value", region);
+        bundle.putSerializable(SubRegionActivity.EXTRA_REGION, region);
         Intent intent = new Intent(this, SubRegionActivity.class);
         intent.putExtras(bundle);
         startActivity(intent);

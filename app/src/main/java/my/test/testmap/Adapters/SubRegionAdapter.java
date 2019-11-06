@@ -56,26 +56,38 @@ public class SubRegionAdapter extends RecyclerView.Adapter<SubRegionAdapter.SubR
         @BindView(R.id.iv_download)
         ImageView iv_download;
 
-        public SubRegionHolder(@NonNull View itemView) {
+        SubRegionHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
-        public void bind(Region region) {
+        void bind(Region region) {
             tv_region_item.setText(region.name);
-            if (!region.isDownloaded){
+            if (region.isDownloaded){
 
                 iv_download.setVisibility(View.INVISIBLE);
             }
         }
 
-        @OnClick
-        void onClick(){
-            onSubRegionClickListener.onSubRegionClick(subRegions.get(getLayoutPosition()));
+        @OnClick({R.id.tv_region_item, R.id.iv_download})
+        void onClick(View view){
+            Region region = subRegions.get(getLayoutPosition());
+            switch (view.getId()){
+                case R.id.tv_region_item:
+                    onSubRegionClickListener.onSubRegionClick(region);
+                    break;
+                case R.id.iv_download:
+                    onSubRegionClickListener.onDownloadClick(region);
+                    break;
+                default:
+                    break;
+            }
+
         }
     }
 
     public interface OnSubRegionClickListener{
         void onSubRegionClick(Region region);
+        void onDownloadClick(Region region);
     }
 }

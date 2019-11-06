@@ -9,15 +9,15 @@ import java.util.List;
 
 import my.test.testmap.Region;
 
-public class ModelReadingXML {
+class ModelReadingXML {
 
     private XmlPullParser parser;
 
-    public ModelReadingXML(XmlPullParser parser) {
+    ModelReadingXML(XmlPullParser parser) {
         this.parser = parser;
     }
 
-    public List<Region> getRegions() throws XmlPullParserException, IOException {
+    List<Region> getRegions() throws XmlPullParserException, IOException {
         List<Region> regions = new ArrayList<>();
         addRegion(parser, regions);
         return regions;

@@ -10,6 +10,7 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import my.test.testmap.Adapters.SubRegionAdapter;
+import my.test.testmap.MVP.PresenterSubRegionActivity;
 import my.test.testmap.R;
 import my.test.testmap.Region;
 
@@ -20,6 +21,7 @@ public class SubRegionActivity extends AppCompatActivity {
 
     SubRegionAdapter adapter;
     Region mainRegion;
+    PresenterSubRegionActivity presenter;
 
     public static final String EXTRA_REGION = "Region";
 
@@ -30,24 +32,61 @@ public class SubRegionActivity extends AppCompatActivity {
         init();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.detachView();
+    }
+
     private void init() {
 
         ButterKnife.bind(this);
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
-        mainRegion = (Region) bundle.getSerializable("value");
+        if (bundle != null) {
+            mainRegion = (Region) bundle.getSerializable(EXTRA_REGION);
+        }
 
         rv_subregions.setLayoutManager(new LinearLayoutManager(this));
         SubRegionAdapter.OnSubRegionClickListener onSubRegionClickListener = new SubRegionAdapter.OnSubRegionClickListener() {
             @Override
             public void onSubRegionClick(Region region) {
-                Toast.makeText(getApplicationContext(),"download", Toast.LENGTH_SHORT).show();
+                if (region.subregions != null
+                        && region.subregions.size() > 0){
+                    openSubRegions(region);
+                }
+            }
+
+            @Override
+            public void onDownloadClick(Region region) {
+                presenter.downloadedRegion(region);
             }
         };
         adapter = new SubRegionAdapter(onSubRegionClickListener);
         rv_subregions.setAdapter(adapter);
-        adapter.refreshRecyclerView(mainRegion.subregions);
+        if (mainRegion != null) {
+            adapter.refreshRecyclerView(mainRegion.subregions);
+        }
 
+        presenter = new PresenterSubRegionActivity();
+        presenter.attachView(this);
+
+    }
+
+    private void openSubRegions(Region region) {
+        if (region == null){
+            showToast("Unknown region");
+            return;
+        }
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(SubRegionActivity.EXTRA_REGION, region);
+        Intent intent = new Intent(this, SubRegionActivity.class);
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
+    public void showToast(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 }
